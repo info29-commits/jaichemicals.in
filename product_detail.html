@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} - Jai Overseas Chemical Limited{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1200px;">
+
+    <!-- Breadcrumb -->
+    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem; color: var(--text-muted); font-size: 0.92rem;" class="reveal">
+        <a href="{{ url_for('products') }}" style="color: var(--gold-dark); font-weight: 500;">&larr; Back to Products</a>
+        <span style="opacity: 0.4;">/</span>
+        <span>{{ product.category or 'Product' }}</span>
+        <span style="opacity: 0.4;">/</span>
+        <span style="color: var(--text-main); font-weight: 500;">{{ product.name[:40] }}{% if product.name|length > 40 %}...{% endif %}</span>
+    </div>
+
+    <div class="detail-grid">
+
+        <!-- Media Column -->
+        <div class="detail-media reveal">
+            {% if product.image_url %}
+                <div class="detail-image-box">
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                </div>
+            {% else %}
+                <div style="background: linear-gradient(135deg, var(--bg-warm) 0%, #e8e4dc 100%); padding: 4rem 2rem; text-align: center; color: var(--text-light); border-radius: var(--radius-xl); font-size: 3rem; display: flex; align-items: center; justify-content: center; min-height: 320px; font-family: 'Playfair Display', serif; border: 1px solid var(--border-color);">
+                    CaCO3
+                </div>
+            {% endif %}
+
+            {% if product.video_url %}
+                <div style="background: var(--surface-color); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color); box-shadow: var(--shadow-luxury);">
+                    <h4 style="margin-bottom: 1rem; font-weight: 600; color: var(--text-main); font-size: 0.95rem;">Product Video</h4>
+                    <video controls style="width: 100%; border-radius: var(--radius); background: var(--bg-warm);">
+                        <source src="{{ product.video_url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Info Column -->
+        <div class="reveal" style="animation-delay: 0.15s;">
+            {% if product.category %}
+                <div style="color: var(--gold-dark); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; font-size: 0.78rem; margin-bottom: 0.75rem;">{{ product.category }}</div>
+            {% endif %}
+
+            <h1 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.75rem; color: var(--text-main); font-weight: 700; line-height: 1.25;">{{ product.name }}</h1>
+
+            <!-- Rating -->
+            {% if reviews %}
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
+                <div style="color: var(--gold); font-size: 1rem; letter-spacing: 2px;">
+                    {% set avg = reviews|map(attribute='rating')|list %}
+                    {% set avg_rating = (avg|sum / avg|length)|round(1) if avg|length > 0 else 0 %}
+                    {% for i in range(5) %}{% if i < avg_rating|int %}<span>&#9733;</span>{% else %}<span style="opacity: 0.3;">&#9733;</span>{% endif %}{% endfor %}
+                </div>
+                <span style="color: var(--text-muted); font-size: 0.88rem;">({{ reviews|length }} review{{ 's' if reviews|length != 1 }})</span>
+            </div>
+            {% endif %}
+
+            <!-- Contact for Pricing -->
+            <div style="background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); color: white; padding: 1.2rem 1.5rem; border-radius: var(--radius-lg); margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 4px 20px rgba(26,54,93,0.2);">
+                <div style="font-size: 1.5rem;">&#9742;</div>
+                <div>
+                    <div style="font-weight: 700; font-size: 1rem;">Contact Sales for Pricing</div>
+                    <div style="font-size: 0.85rem; opacity: 0.9;">Prices vary by quantity and delivery location. Add to My Products and our team will reach out.</div>
+                </div>
+            </div>
+
+            <!-- Add to My Products Form -->
+            <form action="{{ url_for('add_to_wishlist') }}" method="POST" style="background: var(--surface-color); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color); margin-bottom: 2rem; box-shadow: var(--shadow-luxury);">
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+
+                <div style="display: flex; gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div style="flex: 1;">
+                        <label style="display: block; margin-bottom: 0.6rem; font-weight: 600; color: var(--text-main); font-size: 0.92rem;">Quantity Required</label>
+                        <input type="number" name="quantity" min="1" value="1" class="form-control" required>
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="display: block; margin-bottom: 0.6rem; font-weight: 600; color: var(--text-main); font-size: 0.92rem;">Unit of Measurement</label>
+                        <select name="unit" class="form-control" required>
+                            <option value="kgs">Kilograms (KGs)</option>
+                            <option value="bags">Bags (50 KG each)</option>
+                            <option value="tons">Metric Tons (1000 KG)</option>
+                        </select>
+                    </div>
+                </div>
+
+                {% if session.get('user_id') %}
+                    <button type="submit" class="btn btn-gold" style="width: 100%; font-size: 1.05rem; padding: 1rem; font-weight: 700;">
+                        + Add to My Products
+                    </button>
+                {% else %}
+                    <a href="{{ url_for('signup', next=url_for('product_detail', product_id=product.id)) }}" class="btn btn-gold" style="width: 100%; font-size: 1.05rem; padding: 1rem; font-weight: 700; display: flex; text-align: center;">
+                        Sign Up to Add Products
+                    </a>
+                    <p style="text-align: center; margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted);">
+                        Already have an account? <a href="{{ url_for('login', next=url_for('product_detail', product_id=product.id)) }}" style="color: var(--gold-dark); font-weight: 600;">Login here</a>
+                    </p>
+                {% endif %}
+            </form>
+
+            <!-- Trust Badges -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1.5rem; background: linear-gradient(135deg, #f0fff4, #e6ffed); border-radius: var(--radius-lg); border: 1px solid #c6f6d5;">
+                <div style="text-align: center;">
+                    <div style="font-size: 1.3rem; margin-bottom: 0.3rem; color: var(--success-color);">&#10003;</div>
+                    <div style="color: #22543d; font-weight: 600; font-size: 0.88rem;">Quality Certified</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 1.3rem; margin-bottom: 0.3rem; color: var(--success-color);">&#9656;</div>
+                    <div style="color: #22543d; font-weight: 600; font-size: 0.88rem;">Fast Delivery</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Details Tabs -->
+    <div class="reveal" style="background: var(--surface-color); border: 1px solid var(--border-color); border-radius: var(--radius-xl); overflow: hidden; margin-bottom: 3rem; box-shadow: var(--shadow-luxury);">
+        <div style="display: flex; border-bottom: 1px solid var(--border-color);">
+            <button class="tab-button active-tab" data-tab="description" style="flex: 1; padding: 1.25rem; text-align: left; background: var(--bg-warm); border: none; cursor: pointer; font-weight: 600; color: var(--text-main); border-bottom: 3px solid var(--gold); font-size: 0.92rem; transition: var(--transition-fast);">
+                Description
+            </button>
+            <button class="tab-button" data-tab="specification" style="flex: 1; padding: 1.25rem; text-align: left; background: none; border: none; cursor: pointer; font-weight: 600; color: var(--text-muted); font-size: 0.92rem; transition: var(--transition-fast);">
+                Specifications
+            </button>
+            <button class="tab-button" data-tab="application" style="flex: 1; padding: 1.25rem; text-align: left; background: none; border: none; cursor: pointer; font-weight: 600; color: var(--text-muted); font-size: 0.92rem; transition: var(--transition-fast);">
+                Applications
+            </button>
+        </div>
+
+        <div class="tab-content" id="description" style="padding: 2rem;">
+            <p style="color: var(--text-main); line-height: 1.8;">{{ product.description or 'Description coming soon.' }}</p>
+        </div>
+
+        {% if product.specification %}
+        <div class="tab-content" id="specification" style="padding: 2rem; display: none;">
+            <div style="color: var(--text-main); line-height: 1.8; white-space: pre-line;">{{ product.specification }}</div>
+        </div>
+        {% endif %}
+
+        {% if product.application %}
+        <div class="tab-content" id="application" style="padding: 2rem; display: none;">
+            <div style="color: var(--text-main); line-height: 1.8; white-space: pre-line;">{{ product.application }}</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="reveal" style="background: var(--surface-color); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 3rem; margin-top: 3rem; box-shadow: var(--shadow-luxury);">
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 1.6rem; margin-bottom: 2rem; font-weight: 700; color: var(--text-main);">Customer Reviews</h2>
+
+        {% if reviews %}
+            <div style="display: grid; gap: 1.5rem;">
+                {% for review in reviews %}
+                    <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.7rem;">
+                            <div style="font-weight: 600; font-size: 1rem; color: var(--text-main);">{{ review.name }}</div>
+                            <div style="color: var(--text-muted); font-size: 0.85rem;">{{ review.created_at.split(' ')[0] }}</div>
+                        </div>
+                        <div style="color: var(--gold); margin-bottom: 0.8rem; font-size: 0.95rem; letter-spacing: 2px;">
+                            {% for i in range(review.rating) %}&#9733;{% endfor %}{% for i in range(5 - review.rating) %}<span style="opacity: 0.3;">&#9733;</span>{% endfor %}
+                            <span style="color: var(--text-muted); margin-left: 0.5rem; font-size: 0.85rem; letter-spacing: 0;">{{ review.rating }}/5</span>
+                        </div>
+                        <p style="color: var(--text-muted); line-height: 1.7;">{{ review.review_text }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 3rem;">
+                <div style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.3;">&#9733;</div>
+                <p style="color: var(--text-muted); margin-bottom: 0.5rem;">No reviews yet.</p>
+                <p style="color: var(--text-light); font-size: 0.88rem;">Purchase this product and share your experience to help others.</p>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<script>
+document.querySelectorAll('.tab-button').forEach(function(button) {
+    button.addEventListener('click', function() {
+        var tabName = this.getAttribute('data-tab');
+        document.querySelectorAll('.tab-content').forEach(function(tab) { tab.style.display = 'none'; });
+        document.querySelectorAll('.tab-button').forEach(function(btn) {
+            btn.style.color = 'var(--text-muted)';
+            btn.style.borderBottom = 'none';
+            btn.style.background = 'none';
+        });
+        var selected = document.getElementById(tabName);
+        if (selected) selected.style.display = 'block';
+        this.style.color = 'var(--text-main)';
+        this.style.borderBottom = '3px solid var(--gold)';
+        this.style.background = 'var(--bg-warm)';
+    });
+});
+</script>
+{% endblock %}

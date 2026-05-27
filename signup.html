@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up - Jai Overseas Chemical Limited{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-icon">JO</div>
+            <h1>Create Your Account</h1>
+            <p>Join India's trusted calcium carbonate network</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('signup', next=request.args.get('next', '')) }}" id="signupForm" novalidate>
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="Enter your full name" required minlength="2">
+                <div class="validation-msg" id="nameMsg"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Business Email Address</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="you@company.com" required>
+                <div class="validation-msg" id="emailMsg"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" class="form-control" placeholder="+91-XXXXXXXXXX" required>
+                <div class="validation-msg" id="phoneMsg"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Create a strong password" required>
+                <div class="password-strength">
+                    <div class="password-strength-bar" id="strengthBar"></div>
+                </div>
+                <div id="passwordRequirements" style="margin-top: 0.75rem; font-size: 0.82rem; line-height: 2;">
+                    <div id="reqLength" style="color: var(--text-light);">&#9675; At least 6 characters</div>
+                    <div id="reqLetter" style="color: var(--text-light);">&#9675; Contains a letter (a-z)</div>
+                    <div id="reqNumber" style="color: var(--text-light);">&#9675; Contains a number (0-9)</div>
+                    <div id="reqSpecial" style="color: var(--text-light);">&#9675; Contains a special character (!@#$...)</div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="submitBtn" style="width: 100%; margin-top: 1rem; padding: 1rem; font-size: 1rem; font-weight: 600;">
+                Create My Account
+            </button>
+        </form>
+
+        <div class="auth-divider">
+            <p>Already registered?</p>
+            <a href="{{ url_for('login', next=request.args.get('next', '')) }}" class="btn btn-outline" style="margin-top: 0.75rem; width: 100%;">Sign In to Your Account</a>
+        </div>
+
+        <div class="auth-benefits">
+            <h4>Why Join Jai Overseas?</h4>
+            <ul>
+                <li>Access premium calcium carbonate products</li>
+                <li>Direct connect with our sales team</li>
+                <li>Real-time order tracking</li>
+                <li>Exclusive bulk pricing for registered clients</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+var emailInput = document.getElementById('email');
+var passwordInput = document.getElementById('password');
+var nameInput = document.getElementById('name');
+var phoneInput = document.getElementById('phone');
+var strengthBar = document.getElementById('strengthBar');
+
+nameInput.addEventListener('blur', function() {
+    var msg = document.getElementById('nameMsg');
+    if (this.value.trim().length < 2) {
+        this.classList.add('is-invalid');
+        this.classList.remove('is-valid');
+        msg.textContent = 'Name must be at least 2 characters';
+        msg.className = 'validation-msg error';
+    } else {
+        this.classList.remove('is-invalid');
+        this.classList.add('is-valid');
+        msg.textContent = '';
+    }
+});
+
+emailInput.addEventListener('blur', function() {
+    var msg = document.getElementById('emailMsg');
+    var emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+    var val = this.value.trim();
+
+    if (!val) {
+        this.classList.add('is-invalid');
+        this.classList.remove('is-valid');
+        msg.textContent = 'Email is required';
+        msg.className = 'validation-msg error';
+    } else if (!emailRegex.test(val)) {
+        this.classList.add('is-invalid');
+        this.classList.remove('is-valid');
+        msg.textContent = 'Please enter a valid email address';
+        msg.className = 'validation-msg error';
+    } else {
+        var disposable = ['tempmail.com','throwaway.email','guerrillamail.com','mailinator.com','yopmail.com'];
+        var domain = val.split('@')[1];
+        if (disposable.indexOf(domain) !== -1) {
+            this.classList.add('is-invalid');
+            this.classList.remove('is-valid');
+            msg.textContent = 'Disposable email addresses are not allowed';
+            msg.className = 'validation-msg error';
+        } else {
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+            msg.textContent = '';
+        }
+    }
+});
+
+phoneInput.addEventListener('blur', function() {
+    var msg = document.getElementById('phoneMsg');
+    var clean = this.value.replace(/[\s\-\+]/g, '');
+    if (!/^\d{10,}$/.test(clean)) {
+        this.classList.add('is-invalid');
+        this.classList.remove('is-valid');
+        msg.textContent = 'Please enter a valid phone number (at least 10 digits)';
+        msg.className = 'validation-msg error';
+    } else {
+        this.classList.remove('is-invalid');
+        this.classList.add('is-valid');
+        msg.textContent = '';
+    }
+});
+
+passwordInput.addEventListener('input', function() {
+    var val = this.value;
+    var score = 0;
+
+    var hasLength = val.length >= 6;
+    var hasLetter = /[A-Za-z]/.test(val);
+    var hasNumber = /[0-9]/.test(val);
+    var hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(val);
+
+    function setReq(id, met) {
+        var el = document.getElementById(id);
+        if (met) {
+            el.style.color = 'var(--success-color)';
+            el.innerHTML = '&#9679; ' + el.textContent.substring(2);
+        } else {
+            el.style.color = 'var(--text-light)';
+            el.innerHTML = '&#9675; ' + el.textContent.substring(2);
+        }
+    }
+
+    setReq('reqLength', hasLength);
+    setReq('reqLetter', hasLetter);
+    setReq('reqNumber', hasNumber);
+    setReq('reqSpecial', hasSpecial);
+
+    if (hasLength) score++;
+    if (hasLetter) score++;
+    if (hasNumber) score++;
+    if (hasSpecial) score++;
+
+    var pct = (score / 4) * 100;
+    var colors = ['#e53e3e', '#e53e3e', '#d69e2e', '#38a169', '#38a169'];
+    strengthBar.style.width = pct + '%';
+    strengthBar.style.background = colors[score];
+});
+
+document.getElementById('signupForm').addEventListener('submit', function(e) {
+    var pwd = passwordInput.value;
+    var hasLength = pwd.length >= 6;
+    var hasLetter = /[A-Za-z]/.test(pwd);
+    var hasNumber = /[0-9]/.test(pwd);
+    var hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pwd);
+
+    if (!hasLength || !hasLetter || !hasNumber || !hasSpecial) {
+        e.preventDefault();
+        passwordInput.classList.add('is-invalid');
+        passwordInput.focus();
+        return false;
+    }
+
+    var emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(emailInput.value.trim())) {
+        e.preventDefault();
+        emailInput.classList.add('is-invalid');
+        emailInput.focus();
+        return false;
+    }
+});
+</script>
+{% endblock %}

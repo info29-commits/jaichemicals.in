@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 900px;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+        <h2>Your Shopping Cart</h2>
+        {% if cart %}
+            <a href="{{ url_for('clear_cart') }}" class="btn btn-outline" style="padding: 0.3rem 0.8rem; font-size: 0.85rem; border-color: #f87171; color: #f87171;">Clear Cart</a>
+        {% endif %}
+    </div>
+
+    {% if cart %}
+        <div class="glass-panel" style="padding: 2rem;">
+            <div class="table-container" style="margin-top: 0;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Unit Rate</th>
+                            <th style="text-align: right;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for key, item in cart.items() %}
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    {% if item.image_url %}
+                                        <img src="{{ item.image_url }}" alt="img" style="width: 50px; height: 50px; border-radius: 6px; object-fit: cover;">
+                                    {% else %}
+                                        <div style="width: 50px; height: 50px; background: #334155; border-radius: 6px;"></div>
+                                    {% endif %}
+                                    <div style="font-weight: 500;">{{ item.name }}</div>
+                                </div>
+                            </td>
+                            <td>{{ item.quantity }} {{ item.unit }}</td>
+                            <td>₹{{ "%.2f"|format(item.price) }}</td>
+                            <td style="text-align: right; font-weight: 600; color: #818cf8;">₹{{ "%.2f"|format(item.total_item_price) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" style="text-align: right; padding-top: 2rem; font-size: 1.2rem; font-weight: 400;">Grand Total:</td>
+                            <td style="text-align: right; padding-top: 2rem; font-size: 1.5rem; font-weight: 700; color: #34d399;">₹{{ "%.2f"|format(total) }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            
+            <div style="margin-top: 3rem; text-align: right;">
+                <form action="{{ url_for('checkout') }}" method="POST">
+                    <button type="submit" class="btn btn-primary" style="padding: 1rem 3rem; font-size: 1.2rem;">Proceed to Checkout (Razorpay)</button>
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <div class="glass-panel" style="text-align: center; padding: 5rem;">
+            <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.5;">🛒</div>
+            <h3 style="margin-bottom: 1rem;">Your cart is empty</h3>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Looks like you haven't added any products yet.</p>
+            <a href="{{ url_for('products') }}" class="btn btn-primary">Browse Products</a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Jai Overseas Chemical Limited{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-icon" style="background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: var(--primary-dark);">JO</div>
+            <h1>Welcome Back</h1>
+            <p>Login to access your account and manage orders</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('login', next=request.args.get('next', '')) }}" id="loginForm" novalidate>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="you@company.com" required>
+                <div class="validation-msg" id="emailMsg"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem; padding: 1rem; font-size: 1rem; font-weight: 600;">
+                Login to Account
+            </button>
+        </form>
+
+        <div class="auth-divider">
+            <p>Don't have an account yet?</p>
+            <a href="{{ url_for('signup', next=request.args.get('next', '')) }}" class="btn btn-outline" style="margin-top: 0.75rem; width: 100%;">Create New Account</a>
+        </div>
+
+        <div style="background: linear-gradient(135deg, #f0fff4, #e6ffed); border: 1px solid #c6f6d5; padding: 1.5rem; border-radius: var(--radius-lg); margin-top: 2rem;">
+            <div style="font-weight: 700; margin-bottom: 0.5rem; color: #22543d; display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem;">
+                Demo Credentials
+            </div>
+            <div style="font-size: 0.85rem; line-height: 1.8; color: #276749;">
+                <div><strong>Admin:</strong> admin@jaioverseas.com</div>
+                <div><strong>Password:</strong> admin123</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var emailInput = document.getElementById('email');
+
+emailInput.addEventListener('blur', function() {
+    var msg = document.getElementById('emailMsg');
+    var emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+    var val = this.value.trim();
+
+    if (!val) {
+        this.classList.add('is-invalid');
+        this.classList.remove('is-valid');
+        msg.textContent = 'Email is required';
+        msg.className = 'validation-msg error';
+    } else if (!emailRegex.test(val)) {
+        this.classList.add('is-invalid');
+        this.classList.remove('is-valid');
+        msg.textContent = 'Please enter a valid email address';
+        msg.className = 'validation-msg error';
+    } else {
+        this.classList.remove('is-invalid');
+        this.classList.add('is-valid');
+        msg.textContent = '';
+    }
+});
+
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    var emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(emailInput.value.trim())) {
+        e.preventDefault();
+        emailInput.classList.add('is-invalid');
+        document.getElementById('emailMsg').textContent = 'Please enter a valid email address';
+        document.getElementById('emailMsg').className = 'validation-msg error';
+        emailInput.focus();
+        return false;
+    }
+});
+</script>
+{% endblock %}

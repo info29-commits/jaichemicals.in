@@ -1,0 +1,39 @@
+{% extends 'admin_base.html' %}
+
+{% block content %}
+<div class="admin-page-header">
+    <h2>Customer Queries</h2>
+    <p>Incoming enquiries from the Contact page</p>
+</div>
+
+<div class="glass-panel" style="padding: 2rem;">
+    <div class="table-container" style="box-shadow: none;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>Business</th>
+                    <th>Product/Service Needed</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for query in queries %}
+                <tr>
+                    <td style="color: var(--text-muted); font-size: 0.9rem;">{{ query.created_at.split(' ')[0] }}</td>
+                    <td style="font-weight: 600;">{{ query.name }}</td>
+                    <td>{{ query.contact }}</td>
+                    <td>{{ query.business }}</td>
+                    <td style="max-width: 300px;">{{ query.product_service }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 3rem; color: var(--text-muted);">No queries found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

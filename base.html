@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Jai Overseas Chemical Limited - Premium Calcium & Chemical Distributors{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .mobile-toggle { display: none; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+        .mobile-toggle span { display: block; width: 24px; height: 2px; background: var(--text-main); margin: 5px 0; transition: var(--transition-fast); border-radius: 2px; }
+        @media (max-width: 768px) {
+            .mobile-toggle { display: block; }
+            .nav-links { display: none; flex-direction: column; width: 100%; gap: 0; background: white; position: absolute; top: 100%; left: 0; right: 0; padding: 1rem 5%; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-bottom: 1px solid var(--border-color); }
+            .nav-links.active { display: flex; }
+            .nav-links a { padding: 0.75rem 0; border-bottom: 1px solid var(--border-color); }
+            .nav-links a:last-child { border-bottom: none; }
+            .nav-links a:after { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="{{ url_for('index') }}" class="brand">
+            <span class="brand-icon">JO</span>
+            Jai Overseas
+        </a>
+        <button class="mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('active')" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="nav-links">
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('products') }}">Products</a>
+            <a href="{{ url_for('contact') }}">Query & Reviews</a>
+
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('my_products') }}">My Products</a>
+                <a href="{{ url_for('my_orders') }}">My Orders</a>
+
+                {% if session.get('user_role') == 'ADMIN' %}
+                    <a href="{{ url_for('admin_dashboard') }}" style="color: var(--gold-dark); font-weight: 700;">Admin</a>
+                {% endif %}
+
+                <a href="{{ url_for('logout') }}" class="btn btn-outline btn-sm">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('signup') }}" class="btn btn-gold btn-sm">Sign Up</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="flashes">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Jai Overseas Chemical</h4>
+                <p>India's leading Calcium Carbonate importer and distributor since 2003. Supplying premium quality chemical products from Vietnam, Egypt, Jordan, Malaysia & Thailand to industries across Pan India.</p>
+                <div style="margin-top: 1.5rem; display: flex; gap: 0.75rem;">
+                    <a href="https://www.facebook.com/people/Jai-Overseas-Chemical/61587710143278/" target="_blank" rel="noopener noreferrer" style="width: 36px; height: 36px; background: rgba(255,255,255,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.7); font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.1);">f</a>
+                    <a href="https://www.linkedin.com/company/jai-overseas-chemical-limited/" target="_blank" rel="noopener noreferrer" style="width: 36px; height: 36px; background: rgba(255,255,255,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.7); font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.1);">in</a>
+                    <a href="https://www.instagram.com/jaioverseaschemical" target="_blank" rel="noopener noreferrer" style="width: 36px; height: 36px; background: rgba(255,255,255,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.7); font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.1);">ig</a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="{{ url_for('products') }}">Products</a>
+                <a href="{{ url_for('contact') }}">Query & Reviews</a>
+                {% if session.get('user_id') %}
+                    <a href="{{ url_for('my_products') }}">My Products</a>
+                    <a href="{{ url_for('my_orders') }}">My Orders</a>
+                {% endif %}
+            </div>
+
+            <div class="footer-section">
+                <h4>Contact Us</h4>
+                <p style="margin-bottom: 0.6rem;">HB Twin Tower-2, Netaji Subhash Place, Pitampura, Delhi-110034</p>
+                <a href="tel:01145596775" style="color: var(--gold-light);">011-4559-6775</a>
+                <a href="mailto:info@jaichemicals.com" style="color: var(--gold-light);">info@jaichemicals.com</a>
+            </div>
+
+            <div class="footer-section">
+                <h4>Our Brands</h4>
+                <p style="margin-bottom: 0.6rem;"><strong style="color: var(--gold-light);">WHITE SHARK</strong> - Premium CaCO3</p>
+                <p style="margin-bottom: 0.6rem;"><strong style="color: var(--gold-light);">EZY WHITE</strong> - Industrial Grade</p>
+                <p style="margin-top: 1.2rem; font-size: 0.85rem;">Sourcing from Vietnam, Egypt, Jordan, Malaysia & Thailand</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 Jai Overseas Chemical Limited. All rights reserved. | CIN: Registered Company</p>
+        </div>
+    </footer>
+
+    <script>
+    // Scroll reveal animation
+    document.addEventListener('DOMContentLoaded', function() {
+        const reveals = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        reveals.forEach(function(el) { observer.observe(el); });
+
+        // Auto-dismiss flash alerts after 5 seconds
+        document.querySelectorAll('.alert').forEach(function(alert) {
+            setTimeout(function() {
+                alert.style.opacity = '0';
+                alert.style.transform = 'translateY(-10px)';
+                setTimeout(function() { alert.remove(); }, 400);
+            }, 5000);
+        });
+    });
+    </script>
+</body>
+</html>

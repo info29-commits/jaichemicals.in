@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; text-align: center; padding-top: 5rem;">
+    
+    <div class="glass-panel fade-in" style="padding: 4rem;">
+        <h2 style="margin-bottom: 1rem;">Redirecting to Razorpay...</h2>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">Please do not refresh or close this page.</p>
+        
+        <div style="width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #818cf8; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+    </div>
+    
+    <style>
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+
+    <form action="{{ url_for('verify_payment') }}" method="POST" id="razorpay-form">
+        <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+        <input type="hidden" name="razorpay_order_id" id="razorpay_order_id" value="{{ rzp_order_id }}">
+        <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+    </form>
+
+    <script>
+        var options = {
+            "key": "{{ key_id }}",
+            "amount": "{{ total * 100 }}", 
+            "currency": "INR",
+            "name": "Jai Overseas Chemical Ltd",
+            "description": "Wholesale Chemical Purchase",
+            "image": "https://example.com/your_logo",
+            "order_id": "{{ rzp_order_id }}",
+            "handler": function (response){
+                document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+                document.getElementById('razorpay_signature').value = response.razorpay_signature;
+                document.getElementById('razorpay-form').submit();
+            },
+            "prefill": {
+                "name": "{{ session.get('user_name') }}",
+                "email": "customer@example.com"
+            },
+            "theme": {
+                "color": "#4f46e5"
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        
+        // Auto open the checkout
+        window.onload = function() {
+            setTimeout(function() {
+                rzp1.open();
+            }, 1000);
+        };
+    </script>
+</div>
+{% endblock %}

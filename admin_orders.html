@@ -1,0 +1,95 @@
+{% extends 'admin_base.html' %}
+
+{% block content %}
+<div class="admin-page-header">
+    <h2>User Orders</h2>
+    <p>Confirmed orders from the sales team. Update status and manage order items.</p>
+</div>
+
+<div class="glass-panel" style="padding: 0; overflow: visible;">
+    {% if orders %}
+        {% for order in orders %}
+        <div style="padding: 1.5rem 2rem; border-bottom: 1px solid rgba(201,168,76,0.08);">
+
+            <!-- Order Header Row -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                <div>
+                    <span style="font-family: monospace; color: var(--gold-light); font-weight: 700; font-size: 1rem;">#{{ order.id }}</span>
+                    <span style="color: var(--text-muted); font-size: 0.85rem; margin-left: 1rem;">{{ order.created_at.split(' ')[0] }}</span>
+                    <div style="margin-top: 0.4rem;">
+                        <span style="font-weight: 600; color: var(--text-main);">{{ order.user_name }}</span>
+                        <span style="color: var(--text-muted); font-size: 0.85rem; margin-left: 0.6rem;">{{ order.email }}</span>
+                        {% if order.phone %}
+                            <span style="color: var(--text-muted); font-size: 0.85rem; margin-left: 0.6rem;">&middot; {{ order.phone }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Status Update -->
+                <form method="POST" action="{{ url_for('admin_orders') }}" style="display: flex; align-items: center; gap: 0.6rem;">
+                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                    <select name="status" class="form-control" style="padding: 0.4rem 0.6rem; background: rgba(0,0,0,0.4); width: auto; font-size: 0.85rem; color: white; border-color: rgba(201,168,76,0.2);" onchange="this.form.submit()">
+                        <option value="Order Received" {% if order.status == 'Order Received' %}selected{% endif %}>Order Received</option>
+                        <option value="Dispatched" {% if order.status == 'Dispatched' %}selected{% endif %}>Dispatched</option>
+                        <option value="Reached Location" {% if order.status == 'Reached Location' %}selected{% endif %}>Reached Location</option>
+                    </select>
+                </form>
+            </div>
+
+            <!-- Items Table -->
+            <div class="table-container" style="margin: 0; box-shadow: none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 44px;"></th>
+                            <th>Product</th>
+                            <th style="width: 240px;">Quantity &amp; Unit</th>
+                            <th style="width: 80px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.items %}
+                        <tr>
+                            <td>
+                                {% if item.image_url %}
+                                    <img src="{{ item.image_url }}" alt="{{ item.name }}" style="width: 36px; height: 36px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color);">
+                                {% else %}
+                                    <div style="width: 36px; height: 36px; background: #1e293b; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: rgba(255,255,255,0.4);">CaCO3</div>
+                                {% endif %}
+                            </td>
+                            <td style="font-weight: 500; color: var(--text-main);">{{ item.name }}</td>
+                            <td>
+                                <form action="{{ url_for('admin_update_order_item', item_id=item.id) }}" method="POST" style="display: flex; gap: 0.4rem; align-items: center;">
+                                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                                    <input type="number" name="quantity" value="{{ item.quantity | int if item.quantity == item.quantity | int else item.quantity }}" min="0.1" step="0.1"
+                                           style="width: 70px; padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(201,168,76,0.15); border-radius: 4px; color: white; font-size: 0.85rem;">
+                                    <select name="unit" style="padding: 0.3rem; background: rgba(0,0,0,0.4); border: 1px solid rgba(201,168,76,0.15); border-radius: 4px; color: white; font-size: 0.85rem;">
+                                        <option value="kgs" {% if item.unit == 'kgs' %}selected{% endif %}>KGs</option>
+                                        <option value="bags" {% if item.unit == 'bags' %}selected{% endif %}>Bags</option>
+                                        <option value="tons" {% if item.unit == 'tons' %}selected{% endif %}>Tons</option>
+                                    </select>
+                                    <button type="submit" style="padding: 0.3rem 0.6rem; background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.3); border-radius: 4px; color: var(--gold-light); cursor: pointer; font-size: 0.8rem;">Save</button>
+                                </form>
+                            </td>
+                            <td>
+                                <form action="{{ url_for('admin_delete_order_item', item_id=item.id) }}" method="POST" onsubmit="return confirm('Remove this item from the order?');">
+                                    <button type="submit" style="padding: 0.3rem 0.6rem; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 4px; color: #f87171; cursor: pointer; font-size: 0.8rem;">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        {% endfor %}
+
+    {% else %}
+        <div style="text-align: center; padding: 4rem; color: var(--text-muted);">
+            <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;">&#9744;</div>
+            <p>No confirmed orders yet. Confirm orders from the <a href="{{ url_for('admin_user_products') }}" style="color: var(--gold-light);">User Products</a> page.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

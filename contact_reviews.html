@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Query & Reviews - Jai Overseas Chemical Limited{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section style="background: linear-gradient(135deg, var(--primary-dark) 0%, #132f53 50%, var(--primary-color) 100%); color: white; padding: 4rem 5% 3rem; position: relative; overflow: hidden;">
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 80% 50%, rgba(201,168,76,0.08) 0%, transparent 50%);"></div>
+    <div class="container" style="padding: 0; position: relative; z-index: 1;">
+        <div style="display: inline-block; background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.3); color: var(--gold-light); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; padding: 0.35rem 1rem; border-radius: 99px; margin-bottom: 1rem;">Get In Touch</div>
+        <h1 style="font-family: 'Playfair Display', serif; font-size: 2.8rem; margin-bottom: 0.75rem; font-weight: 700;">Query & Reviews</h1>
+        <p style="opacity: 0.85; font-size: 1.05rem; max-width: 600px;">Have a question? Looking for a specific product? Let us know!</p>
+    </div>
+</section>
+
+<div class="container" style="max-width: 1100px;">
+
+    <!-- Contact Info Strip -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; margin-top: -1.5rem; position: relative; z-index: 2;">
+        <div class="glass-panel reveal" style="padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; flex-shrink: 0;">&#9742;</div>
+            <div>
+                <div style="font-size: 0.75rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Call Us</div>
+                <a href="tel:01145596775" style="font-weight: 700; color: var(--text-main); font-size: 1rem;">011-4559-6775</a>
+            </div>
+        </div>
+        <div class="glass-panel reveal" style="padding: 1.5rem; display: flex; align-items: center; gap: 1rem; animation-delay: 0.1s;">
+            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary-dark); font-size: 1.2rem; flex-shrink: 0;">&#9993;</div>
+            <div>
+                <div style="font-size: 0.75rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Email Us</div>
+                <a href="mailto:info@jaichemicals.com" style="font-weight: 700; color: var(--text-main); font-size: 0.95rem;">info@jaichemicals.com</a>
+            </div>
+        </div>
+        <div class="glass-panel reveal" style="padding: 1.5rem; display: flex; align-items: center; gap: 1rem; animation-delay: 0.2s;">
+            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--success-color), #48bb78); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; flex-shrink: 0;">&#9873;</div>
+            <div>
+                <div style="font-size: 0.75rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Visit Us</div>
+                <span style="font-weight: 600; color: var(--text-main); font-size: 0.88rem;">HB Twin Tower-2, Netaji Subhash Place, Pitampura, Delhi-110034</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="contact-grid" style="margin-bottom: 5rem;">
+
+        <!-- Query Form -->
+        <div class="glass-panel reveal" style="padding: 2.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
+                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1rem;">?</div>
+                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--text-main);">Raise a Query</h3>
+            </div>
+            <form action="{{ url_for('contact') }}" method="POST">
+                <input type="hidden" name="form_type" value="query">
+
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" name="name" class="form-control" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Contact Details (Email / Phone)</label>
+                    <input type="text" name="contact" class="form-control" placeholder="you@company.com or phone number" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Your Business / Company Name</label>
+                    <input type="text" name="business" class="form-control" placeholder="Company name (optional)">
+                </div>
+
+                <div class="form-group">
+                    <label>Product or Service you are looking for</label>
+                    <textarea name="product_service" class="form-control" rows="4" placeholder="Describe what you need..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Query</button>
+            </form>
+        </div>
+
+        <!-- Review Form -->
+        <div class="glass-panel reveal" style="padding: 2.5rem; animation-delay: 0.15s;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
+                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary-dark); font-size: 1rem;">&#9733;</div>
+                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--text-main);">Review Our Company</h3>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">We value your feedback. Let others know about your experience with Jai Overseas Chemical.</p>
+
+            <form action="{{ url_for('contact') }}" method="POST">
+                <input type="hidden" name="form_type" value="company_review">
+
+                <div class="form-group">
+                    <label>Overall Rating</label>
+                    <select name="rating" class="form-control" required>
+                        <option value="5">5 Stars - Excellent</option>
+                        <option value="4">4 Stars - Very Good</option>
+                        <option value="3">3 Stars - Good</option>
+                        <option value="2">2 Stars - Fair</option>
+                        <option value="1">1 Star - Poor</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Your Review</label>
+                    <textarea name="review_text" class="form-control" rows="5" placeholder="Share details of your experience..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-gold" style="width: 100%;">Submit Review</button>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- Display Company Reviews -->
+    <div style="margin-bottom: 4rem;">
+        <div class="gold-line"></div>
+        <h2 class="section-title reveal">What Our Clients Say</h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; margin-top: 2rem;">
+            {% for review in reviews %}
+                <div class="glass-panel reveal" style="padding: 2rem; position: relative; animation-delay: {{ loop.index0 * 0.08 }}s;">
+                    <div style="font-size: 4rem; position: absolute; top: 8px; right: 18px; opacity: 0.06; color: var(--gold); font-family: 'Playfair Display', serif; line-height: 1;">&ldquo;</div>
+                    <div style="color: var(--gold); margin-bottom: 1rem; font-size: 1rem; letter-spacing: 2px;">
+                        {% for i in range(review.rating) %}&#9733;{% endfor %}{% for i in range(5 - review.rating) %}<span style="opacity: 0.25;">&#9733;</span>{% endfor %}
+                    </div>
+                    <p style="color: var(--text-main); line-height: 1.7; margin-bottom: 1.5rem; font-style: italic; font-size: 0.95rem;">&ldquo;{{ review.review_text }}&rdquo;</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                        <div style="font-weight: 700; color: var(--primary-light); font-size: 0.95rem;">{{ review.name }}</div>
+                        <div style="color: var(--text-light); font-size: 0.8rem;">{{ review.created_at.split(' ')[0] }}</div>
+                    </div>
+                </div>
+            {% else %}
+                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 3rem;">
+                    <div style="font-size: 2rem; opacity: 0.3; margin-bottom: 0.75rem;">&#9733;</div>
+                    No reviews yet. Be the first to share your experience!
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

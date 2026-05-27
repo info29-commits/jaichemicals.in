@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Jai Overseas Chemical</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body { background-image: none; background-color: #0a1628; }
+
+        .admin-content h1,
+        .admin-content h2 {
+            color: #f1f5f9;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .glass-panel h2,
+        .glass-panel h3 { color: var(--text-main) !important; }
+        .stat-card h3    { color: var(--primary-color) !important; }
+
+        .admin-sidebar {
+            background: #0f1a2e;
+            border-right: 1px solid rgba(201,168,76,0.1);
+        }
+        .admin-sidebar a { color: rgba(255,255,255,0.65) !important; }
+        .admin-sidebar a:hover,
+        .admin-sidebar a.active {
+            background: rgba(201,168,76,0.08) !important;
+            color: var(--gold-light) !important;
+            border-left-color: var(--gold) !important;
+        }
+        .admin-sidebar h3 { color: rgba(255,255,255,0.35) !important; }
+
+        .admin-page-header {
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(201,168,76,0.1);
+        }
+        .admin-page-header p {
+            color: rgba(148,163,184,0.85);
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar" style="border-bottom: 1px solid rgba(201,168,76,0.12); background: #0f1a2e;">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <a href="{{ url_for('index') }}" class="brand" style="color: #f1f5f9;">
+                <span class="brand-icon" style="background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: var(--primary-dark);">JO</span>
+                Jai Overseas
+            </a>
+            <span style="color: var(--gold-light); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; padding: 0.25rem 0.7rem; background: rgba(201,168,76,0.12); border: 1px solid rgba(201,168,76,0.25); border-radius: 6px;">Admin</span>
+        </div>
+        <div class="nav-links">
+            <span style="color: rgba(255,255,255,0.6); margin-right: 1rem; font-size: 0.9rem;">Welcome, <strong style="color: #f1f5f9;">{{ session.get('user_name') }}</strong></span>
+            <a href="{{ url_for('index') }}" class="btn btn-outline btn-sm" style="color: var(--gold-light); border-color: rgba(201,168,76,0.35);">Back to Site</a>
+            <a href="{{ url_for('logout') }}" class="btn btn-outline btn-sm" style="border-color: rgba(239,68,68,0.4); color: #f87171;">Logout</a>
+        </div>
+    </nav>
+
+    <div class="flashes" style="position: absolute; top: 60px; right: 20px; width: 350px; z-index: 1000; padding: 0;">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {{ category }}" style="box-shadow: 0 10px 25px rgba(0,0,0,0.5);">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div style="margin-bottom: 2rem;">
+                <h3 style="color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1rem; padding-left: 1rem;">Menu</h3>
+                <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('admin_products') }}">Products</a>
+                <a href="{{ url_for('admin_user_products') }}">User Products</a>
+                <a href="{{ url_for('admin_orders') }}">User Orders</a>
+                <a href="{{ url_for('admin_users') }}">Users</a>
+                <a href="{{ url_for('admin_queries') }}">Queries</a>
+            </div>
+        </aside>
+
+        <main class="admin-content fade-in">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+</body>
+</html>

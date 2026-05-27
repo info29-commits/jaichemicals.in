@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}My Products - Jai Overseas Chemical Limited{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1000px;">
+
+    <div style="margin-bottom: 2rem;" class="reveal">
+        <div style="display: inline-block; background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.2); color: var(--gold-dark); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; padding: 0.3rem 0.8rem; border-radius: 99px; margin-bottom: 0.75rem;">My Selection</div>
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--text-main);">My Products</h2>
+        <p style="color: var(--text-muted);">Products you're interested in. Our sales team will contact you to finalise your order.</p>
+    </div>
+
+    <!-- Sales Team Banner -->
+    <div class="reveal" style="background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); color: white; padding: 1.5rem 2rem; border-radius: var(--radius-lg); margin-bottom: 2rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; box-shadow: 0 4px 20px rgba(26,54,93,0.2);">
+        <div style="font-size: 1.8rem;">&#9742;</div>
+        <div style="flex: 1;">
+            <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 0.3rem;">Ready to Purchase?</div>
+            <div style="font-size: 0.9rem; opacity: 0.92;">Contact our sales team to get the best pricing and confirm your order.</div>
+        </div>
+        <a href="{{ url_for('contact') }}" class="btn" style="background: white; color: var(--primary-color); font-weight: 700; padding: 0.7rem 1.5rem; white-space: nowrap; border-radius: var(--radius);">
+            Connect with Sales &rarr;
+        </a>
+    </div>
+
+    {% if items %}
+        <div class="glass-panel reveal" style="padding: 0; overflow: hidden;">
+            <div class="table-container" style="margin: 0; box-shadow: none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;"></th>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>Quantity</th>
+                            <th>Unit</th>
+                            <th>Added On</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td>
+                                {% if item.image_url %}
+                                    <img src="{{ item.image_url }}" alt="{{ item.name }}" style="width: 48px; height: 48px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-color);">
+                                {% else %}
+                                    <div style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--bg-warm), #e8e4dc); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: var(--text-light); font-weight: 600;">CaCO3</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('product_detail', product_id=item.product_id) }}" style="font-weight: 600; color: var(--primary-light); text-decoration: none;">
+                                    {{ item.name }}
+                                </a>
+                            </td>
+                            <td style="color: var(--text-muted); font-size: 0.9rem;">{{ item.category or '&mdash;' }}</td>
+                            <td style="font-weight: 600;">{{ item.quantity | int if item.quantity == item.quantity | int else item.quantity }}</td>
+                            <td style="text-transform: capitalize; color: var(--text-muted);">{{ item.unit }}</td>
+                            <td style="color: var(--text-muted); font-size: 0.85rem;">{{ item.added_at.split(' ')[0] }}</td>
+                            <td>
+                                <form action="{{ url_for('remove_from_wishlist', item_id=item.id) }}" method="POST" onsubmit="return confirm('Remove this item from My Products?');">
+                                    <button type="submit" class="btn" style="padding: 0.3rem 0.8rem; font-size: 0.8rem; background: rgba(229,62,62,0.08); color: var(--danger-color); border: 1px solid rgba(229,62,62,0.2); border-radius: 6px;">
+                                        Remove
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="reveal" style="margin-top: 1.5rem; padding: 1.2rem 1.5rem; background: linear-gradient(135deg, #f0fff4, #e6ffed); border: 1px solid #c6f6d5; border-radius: var(--radius-lg); display: flex; align-items: center; gap: 1rem;">
+            <div style="color: var(--success-color); font-size: 1.2rem;">&#9432;</div>
+            <p style="margin: 0; color: #276749; font-size: 0.9rem;">
+                <strong>Next step:</strong> Our sales team reviews your product list and will contact you to discuss quantity, delivery, and pricing. You can also reach us at <a href="tel:01145596775" style="color: #22543d; font-weight: 600;">011-4559-6775</a> or <a href="mailto:info@jaichemicals.com" style="color: #22543d; font-weight: 600;">info@jaichemicals.com</a>.
+            </p>
+        </div>
+
+    {% else %}
+        <div class="glass-panel reveal" style="text-align: center; padding: 5rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;">&#9744;</div>
+            <h3 style="margin-bottom: 1rem; color: var(--text-main); font-family: 'Playfair Display', serif;">No Products Added Yet</h3>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Browse our catalog and add products you're interested in. Our sales team will help you with pricing and ordering.</p>
+            <a href="{{ url_for('products') }}" class="btn btn-gold">Browse Products</a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

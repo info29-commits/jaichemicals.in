@@ -1,0 +1,239 @@
+{% extends 'admin_base.html' %}
+
+{% block content %}
+<div class="admin-page-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+    <div>
+        <h2>Manage Products</h2>
+        <p>Add, edit, and delete products in your catalogue</p>
+    </div>
+    <button class="btn btn-primary" onclick="toggleAddForm()" style="padding: 0.5rem 1.2rem; margin-top: 0.2rem;">+ Add Product</button>
+</div>
+
+<style>
+    .hidden { display: none; }
+    .action-btn {
+        padding: 0.3rem 0.75rem;
+        font-size: 0.82rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: all 0.18s;
+        line-height: 1.5;
+    }
+    .btn-edit  { background: rgba(59,130,246,0.12); color: #93c5fd; border-color: rgba(59,130,246,0.3); }
+    .btn-edit:hover  { background: rgba(59,130,246,0.25); }
+    .btn-delete { background: rgba(239,68,68,0.1); color: #f87171; border-color: rgba(239,68,68,0.28); }
+    .btn-delete:hover { background: rgba(239,68,68,0.22); }
+</style>
+
+<!-- ADD PRODUCT FORM -->
+<div id="addProductForm" class="glass-panel hidden fade-in" style="padding: 2rem; margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="margin:0;">Add New Product</h3>
+        <button type="button" class="action-btn btn-delete" onclick="document.getElementById('addProductForm').classList.add('hidden')">&#10005; Close</button>
+    </div>
+    <form method="POST" action="{{ url_for('admin_products') }}" enctype="multipart/form-data">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+            <div class="form-group" style="margin-bottom:0;">
+                <label>Product Name</label>
+                <input type="text" name="name" class="form-control" required>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+                <label>Category</label>
+                <input type="text" name="category" class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Short Description</label>
+            <textarea name="description" class="form-control" rows="2"></textarea>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+            <div class="form-group" style="margin-bottom:0;">
+                <label>Detailed Specification</label>
+                <textarea name="specification" class="form-control" rows="4"></textarea>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+                <label>Application / Usage</label>
+                <textarea name="application" class="form-control" rows="4"></textarea>
+            </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+            <div class="form-group" style="margin-bottom:0;">
+                <label>Product Image</label>
+                <input type="file" name="image" class="form-control" accept="image/*">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+                <label>Product Video (MP4)</label>
+                <input type="file" name="video" class="form-control" accept="video/mp4,video/x-m4v,video/*">
+            </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+            <button type="button" class="btn btn-outline" onclick="document.getElementById('addProductForm').classList.add('hidden')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Product</button>
+        </div>
+    </form>
+</div>
+
+<!-- EDIT PRODUCT FORM -->
+<div id="editProductForm" class="glass-panel hidden fade-in" style="padding: 2rem; margin-bottom: 2rem; border-top: 3px solid #3b82f6;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="margin:0;">Edit Product</h3>
+        <button type="button" class="action-btn btn-delete" onclick="closeEditForm()">&#10005; Close</button>
+    </div>
+    <form id="editForm" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="existing_image_url" id="edit-existing-image">
+        <input type="hidden" name="existing_video_url" id="edit-existing-video">
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+            <div class="form-group" style="margin-bottom:0;">
+                <label>Product Name</label>
+                <input type="text" id="edit-name" name="name" class="form-control" required>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+                <label>Category</label>
+                <input type="text" id="edit-category" name="category" class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Short Description</label>
+            <textarea id="edit-description" name="description" class="form-control" rows="2"></textarea>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+            <div class="form-group" style="margin-bottom:0;">
+                <label>Detailed Specification</label>
+                <textarea id="edit-specification" name="specification" class="form-control" rows="4"></textarea>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+                <label>Application / Usage</label>
+                <textarea id="edit-application" name="application" class="form-control" rows="4"></textarea>
+            </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+            <div class="form-group" style="margin-bottom:0;">
+                <label>Replace Image <small style="color:var(--text-muted); font-weight:400;">(leave blank to keep current)</small></label>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <img id="edit-image-preview" src="" alt="Current image"
+                         style="display:none; width:56px; height:56px; object-fit:cover; border-radius:6px; border:1px solid var(--border-color);">
+                    <input type="file" name="image" class="form-control" accept="image/*" style="flex:1;">
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+                <label>Replace Video <small style="color:var(--text-muted); font-weight:400;">(leave blank to keep current)</small></label>
+                <input type="file" name="video" class="form-control" accept="video/mp4,video/x-m4v,video/*">
+            </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+            <button type="button" class="btn btn-outline" onclick="closeEditForm()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Update Product</button>
+        </div>
+    </form>
+</div>
+
+<!-- PRODUCTS TABLE -->
+<div class="glass-panel" style="padding: 2rem;">
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th style="text-align:center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td style="color:var(--text-muted); font-size:0.9rem;">#{{ product.id }}</td>
+                    <td>
+                        {% if product.image_url %}
+                            <img src="{{ product.image_url }}" alt="{{ product.name }}"
+                                 style="width:48px; height:48px; object-fit:cover; border-radius:6px; border:1px solid var(--border-color);">
+                        {% else %}
+                            <div style="width:48px; height:48px; background:#334155; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:0.7rem; color: rgba(255,255,255,0.5);">CaCO3</div>
+                        {% endif %}
+                    </td>
+                    <td style="font-weight:600;">{{ product.name }}</td>
+                    <td>
+                        {% if product.category %}
+                            <span style="background:rgba(59,130,246,0.1); color:#93c5fd; padding:0.2rem 0.65rem; border-radius:99px; font-size:0.8rem; font-weight:600; white-space:nowrap;">{{ product.category }}</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align:center;">
+                        <div style="display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap;">
+                            <button class="action-btn btn-edit" onclick="openEditForm({{ product.id }})">Edit</button>
+                            <form method="POST" action="{{ url_for('admin_product_delete', product_id=product.id) }}"
+                                  onsubmit="return confirm('Delete \'{{ product.name | e }}\'?\nThis action cannot be undone.');"
+                                  style="display:inline;">
+                                <button type="submit" class="action-btn btn-delete">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align:center; padding:3rem; color:var(--text-muted);">
+                        <div style="font-size:2.5rem; margin-bottom:0.5rem; opacity: 0.4;">&#9744;</div>
+                        No products yet &mdash; click <strong>+ Add Product</strong> to get started.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+var productsData = {
+    {% for product in products %}
+    {{ product.id }}: {
+        name:          {{ product.name          | tojson }},
+        category:      {{ (product.category     or '') | tojson }},
+        description:   {{ (product.description  or '') | tojson }},
+        specification: {{ (product.specification or '') | tojson }},
+        application:   {{ (product.application  or '') | tojson }},
+        image_url:     {{ (product.image_url    or '') | tojson }},
+        video_url:     {{ (product.video_url    or '') | tojson }}
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+};
+
+function toggleAddForm() {
+    var el = document.getElementById('addProductForm');
+    el.classList.toggle('hidden');
+    if (!el.classList.contains('hidden')) {
+        closeEditForm();
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+function openEditForm(productId) {
+    var p = productsData[productId];
+    if (!p) return;
+
+    document.getElementById('editForm').action = '/admin/products/edit/' + productId;
+    document.getElementById('edit-name').value          = p.name;
+    document.getElementById('edit-category').value      = p.category;
+    document.getElementById('edit-description').value   = p.description;
+    document.getElementById('edit-specification').value = p.specification;
+    document.getElementById('edit-application').value   = p.application;
+    document.getElementById('edit-existing-image').value = p.image_url;
+    document.getElementById('edit-existing-video').value = p.video_url;
+
+    var preview = document.getElementById('edit-image-preview');
+    if (p.image_url) { preview.src = p.image_url; preview.style.display = 'block'; }
+    else             { preview.style.display = 'none'; }
+
+    document.getElementById('addProductForm').classList.add('hidden');
+    var editEl = document.getElementById('editProductForm');
+    editEl.classList.remove('hidden');
+    editEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function closeEditForm() {
+    document.getElementById('editProductForm').classList.add('hidden');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Products - Jai Overseas Chemical Limited{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section style="background: linear-gradient(135deg, var(--primary-dark) 0%, #132f53 50%, var(--primary-color) 100%); color: white; padding: 4rem 5% 3rem; position: relative; overflow: hidden;">
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 80% 50%, rgba(201,168,76,0.08) 0%, transparent 50%);"></div>
+    <div class="container" style="padding: 0; position: relative; z-index: 1;">
+        <div style="display: inline-block; background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.3); color: var(--gold-light); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; padding: 0.35rem 1rem; border-radius: 99px; margin-bottom: 1rem;">Product Catalogue</div>
+        <h1 style="font-family: 'Playfair Display', serif; font-size: 2.8rem; margin-bottom: 0.75rem; font-weight: 700;">Our Products</h1>
+        <p style="opacity: 0.85; font-size: 1.05rem; max-width: 600px;">Browse our extensive range of high-grade wholesale chemicals and calcium products sourced from the finest international manufacturers.</p>
+    </div>
+</section>
+
+<section class="container">
+    <!-- Category Filter -->
+    <div class="category-filter reveal">
+        <label for="category-select">Filter by Category:</label>
+        <select id="category-select" class="form-control" onchange="filterByCategory(this.value)">
+            <option value="">All Products</option>
+            {% for category in categories %}
+                <option value="{{ category }}">{{ category }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Sort & Count -->
+    <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+        <div style="display: flex; gap: 1rem;">
+            <button onclick="sortProducts('name')" class="btn btn-outline btn-sm" style="border-color: var(--gold); color: var(--gold-dark);">
+                Sort by Name
+            </button>
+        </div>
+        <div style="color: var(--text-muted); font-size: 0.9rem;">
+            Showing <strong id="product-count">{{ products|length }}</strong> products
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="products-grid" id="products-container">
+        {% for product in products %}
+        <a href="{{ url_for('product_detail', product_id=product.id) }}" class="product-card reveal" data-category="{{ product.category or '' }}" data-name="{{ product.name }}" style="text-decoration: none; color: inherit; animation-delay: {{ (loop.index0 % 6) * 0.08 }}s;">
+            <div class="product-img-wrapper">
+                {% if product.image_url %}
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-img">
+                    {% if product.category %}
+                        <div class="product-badge">{{ product.category }}</div>
+                    {% endif %}
+                {% else %}
+                    <div class="product-img" style="display: flex; align-items: center; justify-content: center; color: var(--text-light); font-size: 2.5rem; background: linear-gradient(135deg, var(--bg-warm) 0%, #e8e4dc 100%);">
+                        CaCO3
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="product-info">
+                {% if product.category %}
+                    <div class="product-category">{{ product.category }}</div>
+                {% endif %}
+
+                <h3 class="product-title">{{ product.name }}</h3>
+                <p class="product-desc">{{ product.description[:100] }}{% if product.description and product.description|length > 100 %}...{% endif %}</p>
+
+                <div style="font-size: 0.85rem; color: var(--text-muted); font-style: italic; margin-bottom: 1rem;">Contact sales for pricing</div>
+
+                <div style="font-size: 0.9rem; color: var(--gold-dark); font-weight: 600; margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                    View Details &rarr;
+                </div>
+            </div>
+        </a>
+        {% else %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 5rem; color: var(--text-muted);" class="glass-panel">
+            <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.4;">&#9744;</div>
+            <h2 style="margin-bottom: 1rem; color: var(--text-main); font-family: 'Playfair Display', serif;">No Products Available</h2>
+            <p>Our inventory is currently being updated. Please check back later.</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<script>
+var allProducts = document.querySelectorAll('.product-card');
+var currentFilter = '';
+var currentSort = '';
+
+function filterByCategory(category) {
+    currentFilter = category;
+    applyFiltersAndSort();
+    var visibleCount = 0;
+    allProducts.forEach(function(p) { if (p.style.display !== 'none') visibleCount++; });
+    document.getElementById('product-count').textContent = visibleCount;
+}
+
+function sortProducts(sortBy) {
+    currentSort = sortBy;
+    applyFiltersAndSort();
+}
+
+function applyFiltersAndSort() {
+    allProducts.forEach(function(product) {
+        var category = product.getAttribute('data-category');
+        product.style.display = (currentFilter === '' || category === currentFilter) ? '' : 'none';
+    });
+
+    if (currentSort) {
+        var container = document.getElementById('products-container');
+        var visible = Array.from(allProducts).filter(function(p) { return p.style.display !== 'none'; });
+        visible.sort(function(a, b) {
+            if (currentSort === 'name') return a.getAttribute('data-name').localeCompare(b.getAttribute('data-name'));
+            return 0;
+        });
+        visible.forEach(function(p) { container.appendChild(p); });
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'admin_base.html' %}
+
+{% block content %}
+<div class="admin-page-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+    <div>
+        <h2 style="font-size: 1.75rem; margin-bottom: 0.3rem;">Dashboard Overview</h2>
+        <p>Welcome back, <strong style="color: var(--gold-light);">{{ session.get('user_name') }}</strong> &mdash; here's your platform at a glance.</p>
+    </div>
+    <div style="font-size: 0.78rem; color: rgba(148,163,184,0.5); text-align: right; padding-top: 0.3rem;">
+        Jai Overseas Chemical Ltd.<br>Admin Portal
+    </div>
+</div>
+
+<!-- Stat Cards -->
+<div class="admin-stats">
+    <div class="stat-card glass-panel" style="border-top: 3px solid var(--primary-light);">
+        <div style="font-size: 2rem; margin-bottom: 0.6rem; opacity: 0.7;">&#9679;</div>
+        <h3>{{ users }}</h3>
+        <p>Registered Users</p>
+    </div>
+    <div class="stat-card glass-panel" style="border-top: 3px solid var(--gold);">
+        <div style="font-size: 2rem; margin-bottom: 0.6rem; opacity: 0.7;">&#9670;</div>
+        <h3 style="color: var(--gold) !important;">{{ products }}</h3>
+        <p>Total Products</p>
+    </div>
+    <div class="stat-card glass-panel" style="border-top: 3px solid #ed64a6;">
+        <div style="font-size: 2rem; margin-bottom: 0.6rem; opacity: 0.7;">&#9744;</div>
+        <h3 style="color: #ed64a6 !important;">{{ wishlist_users }}</h3>
+        <p>Users with Wishlist</p>
+    </div>
+    <div class="stat-card glass-panel" style="border-top: 3px solid #805ad5;">
+        <div style="font-size: 2rem; margin-bottom: 0.6rem; opacity: 0.7;">&#9745;</div>
+        <h3 style="color: #805ad5 !important;">{{ orders }}</h3>
+        <p>Confirmed Orders</p>
+    </div>
+    <div class="stat-card glass-panel" style="border-top: 3px solid var(--success-color);">
+        <div style="font-size: 2rem; margin-bottom: 0.6rem; opacity: 0.7;">&#9993;</div>
+        <h3 style="color: var(--success-color) !important;">{{ queries }}</h3>
+        <p>Open Queries</p>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="glass-panel" style="padding: 2rem; margin-top: 2rem;">
+    <h3 style="margin-bottom: 0.4rem;">Quick Actions</h3>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Manage your store from here</p>
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="{{ url_for('admin_products') }}" class="btn btn-primary">+ Add New Product</a>
+        <a href="{{ url_for('admin_user_products') }}" class="btn btn-outline">User Products</a>
+        <a href="{{ url_for('admin_orders') }}" class="btn btn-outline">User Orders</a>
+        <a href="{{ url_for('admin_queries') }}" class="btn btn-outline">View Queries</a>
+        <a href="{{ url_for('admin_users') }}" class="btn btn-outline">View Users</a>
+    </div>
+</div>
+
+<!-- Summary Links -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+    <a href="{{ url_for('admin_user_products') }}" style="display: block; padding: 1.2rem 1.5rem; background: rgba(237,100,166,0.08); border: 1px solid rgba(237,100,166,0.2); border-radius: var(--radius); color: #f687b3; font-weight: 600; text-decoration: none; transition: all 0.2s;">
+        {{ wishlist_users }} User{{ 's' if wishlist_users != 1 }} with Wishlist &rarr;
+    </a>
+    <a href="{{ url_for('admin_orders') }}" style="display: block; padding: 1.2rem 1.5rem; background: rgba(128,90,213,0.08); border: 1px solid rgba(128,90,213,0.2); border-radius: var(--radius); color: #b794f4; font-weight: 600; text-decoration: none; transition: all 0.2s;">
+        {{ orders }} Order{{ 's' if orders != 1 }} &mdash; View All &rarr;
+    </a>
+    <a href="{{ url_for('admin_queries') }}" style="display: block; padding: 1.2rem 1.5rem; background: rgba(56,161,105,0.08); border: 1px solid rgba(56,161,105,0.2); border-radius: var(--radius); color: #68d391; font-weight: 600; text-decoration: none; transition: all 0.2s;">
+        {{ queries }} Quer{{ 'ies' if queries != 1 else 'y' }} &mdash; View All &rarr;
+    </a>
+</div>
+{% endblock %}
