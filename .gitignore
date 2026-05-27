@@ -1,20 +1,34 @@
-# .gitignore
-@'
-venv/
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+*.pyd
+env/
+venv/
+ENV/
+.venv/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Secrets & local configs
 .env
-*.db
-static/uploads/
 instance/
-'@ | Out-File -Encoding utf8 .gitignore
+*.sqlite3
+*.db
 
-# Procfile
-"web: gunicorn app:app" | Out-File -Encoding utf8 Procfile
+# Uploads and build artifacts
+static/uploads/
+dist/
+build/
 
-# Minimal requirements (if you haven't installed deps locally)
-@'
-Flask
-gunicorn
-Werkzeug
-'@ | Out-File -Encoding utf8 requirements.txt
+# Bytecode / caches
+pip-log.txt
+
+# Other
+coverage/
+htmlcov/
