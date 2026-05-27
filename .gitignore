@@ -1,0 +1,20 @@
+# .gitignore
+@'
+venv/
+__pycache__/
+*.pyc
+.env
+*.db
+static/uploads/
+instance/
+'@ | Out-File -Encoding utf8 .gitignore
+
+# Procfile
+"web: gunicorn app:app" | Out-File -Encoding utf8 Procfile
+
+# Minimal requirements (if you haven't installed deps locally)
+@'
+Flask
+gunicorn
+Werkzeug
+'@ | Out-File -Encoding utf8 requirements.txt
